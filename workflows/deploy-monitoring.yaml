@@ -1,0 +1,48 @@
+name: Deploy LGMT Stack
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  RESOURCE_GROUP: cadca2-aks-rg
+  CLUSTER_NAME: cadca2-aks-cluster
+  LOCATION: eastus
+
+jobs:
+  deploy-lgmt:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Check if AKS cluster exists
+      id: check_cluster
+      run: |
+        set -e
+        if az aks show --name "$CLUSTER_NAME" --resource-group "$RESOURCE_GROUP" &> /dev/null; then
+          echo "Cluster exists"
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "Cluster does not exist"
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Deploy LGMT stack
+      if: steps.check_cluster.outputs.exists == 'true'
+      run: |
+        chmod +x ./deploy-lgmt-azure.sh
+        ./deploy-lgmt-azure.sh
+
+    - name: Cluster Not Found Notice
+      if: steps.check_cluster.outputs.exists == 'false'
+      run: |
+        echo "AKS Cluster $CLUSTER_NAME not found in resource group $RESOURCE_GROUP. Deployment skipped."
