@@ -38,3 +38,15 @@ export LOCATION="East US"
 export NAMESPACE="monitoring"
 
 ```
+
+### Access Grafana
+```bash
+# Access dashboard
+kubectl port-forward svc/lgtm-grafana 3000:80 -n monitoring
+
+# Get password credentials
+kubectl get secret --namespace monitoring lgtm-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+```
+- Default username: `admin`
+- Access URL: http://localhost:3000
+- Check default Grafana dashboards and Explore tab

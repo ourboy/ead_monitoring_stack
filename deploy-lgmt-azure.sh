@@ -100,6 +100,6 @@ kubectl apply -k https://github.com/dotdc/grafana-dashboards-kubernetes.git -n $
 
 echo "LGTM stack deployed successfully to $TARGET!"
 
-echo "Grafana admin password:"
-kubectl get secret --namespace $NAMESPACE lgtm-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
-echo ""
+# echo "Grafana admin password:"
+# kubectl get secret --namespace $NAMESPACE lgtm-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+# echo ""
