@@ -19,7 +19,7 @@ if [ -d "$STACK_DIR" ]; then
 fi
 
 echo "Cloning LGTM stack..."
-git clone git@github.com:daviaraujocc/lgtm-stack.git "$STACK_DIR"
+git clone https://github.com/daviaraujocc/lgtm-stack.git "$STACK_DIR"
 
 az login --only-show-errors
 az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
