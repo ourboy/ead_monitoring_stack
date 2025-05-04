@@ -22,11 +22,19 @@ echo "Cloning LGTM stack..."
 git clone https://github.com/daviaraujocc/lgtm-stack.git "$STACK_DIR"
 
 az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
+az storage account create \
+    --name $STORAGE_ACCOUNT \
+    --resource-group $RESOURCE_GROUP \
+    --location $LOCATION \
+    --sku Standard_RAGRS \
+    --kind StorageV2 \
+    --min-tls-version TLS1_2
 
 echo "Creating Azure Blob containers..."
 for container in "${CONTAINERS[@]}"; do
   az storage container create --name "lgtm-${container}-${CONTAINER_SUFFIX}" --account-name $STORAGE_ACCOUNT --auth-mode login
 done
+  az storage container create --name "lgtm-logs" --account-name cadca2storage --auth-mode login
 
 STORAGE_KEY=$(az storage account keys list --resource-group $RESOURCE_GROUP --account-name $STORAGE_ACCOUNT --query '[0].value' -o tsv)
 kubectl create namespace $NAMESPACE || true
