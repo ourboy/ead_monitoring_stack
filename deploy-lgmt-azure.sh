@@ -106,8 +106,23 @@ helm upgrade --install lgtm grafana/lgtm-distributed \
 echo "Applying Grafana dashboards..."
 kubectl apply -k https://github.com/dotdc/grafana-dashboards-kubernetes.git -n $NAMESPACE
 
+kubectl apply -f lgmt--stack/manifests/promtail.docker.yaml
+
 echo "LGTM stack deployed successfully to $TARGET!"
 
 # echo "Grafana admin password:"
 # kubectl get secret --namespace $NAMESPACE lgtm-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
 # echo ""
+
+
+# To test loki integration:
+# # Forward Loki port
+# kubectl port-forward svc/lgtm-loki-distributor 3100:3100 -n monitoring
+
+# # Send test log with timestamp and labels
+# curl -XPOST http://localhost:3100/loki/api/v1/push -H "Content-Type: application/json" -d '{
+#   "streams": [{
+#     "stream": { "app": "test", "level": "info" },
+#     "values": [[ "'$(date +%s)000000000'", "Test log message" ]]
+#   }]
+# }'
